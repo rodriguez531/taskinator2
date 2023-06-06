@@ -1,3 +1,5 @@
+// const { json } = require("express");
+
 var taskIdCounter = 0;
 
 var formEl = document.querySelector("#task-form");
@@ -59,11 +61,11 @@ var createTaskEl = function(taskDataObj) {
   taskDataObj.id = taskIdCounter;
   tasks.push(taskDataObj);
 
+  saveTasks();
+
   // increase task counter for next unique id
   taskIdCounter++;
 
-  console.log(taskDataObj);
-  console.log(taskDataObj.status);
 };
 
 var createTaskActions = function(taskId) {
@@ -121,6 +123,8 @@ var completeEditTask = function(taskName, taskType, taskId) {
     }
   };
 
+saveTasks();
+
   alert("Task Updated!");
 
   // remove data attribute from form
@@ -169,7 +173,8 @@ var taskStatusChangeHandler = function(event) {
       tasks[i].status = statusValue;
     }
   }
-  console.log(tasks);
+  
+  saveTasks();
 };
 
 var editTask = function(taskId) {
@@ -212,8 +217,33 @@ var deleteTask = function(taskId) {
   }
   //reassign tasks array to be the same as updatedTaskArr
   tasks = updatedTaskArr;
+
+saveTasks();
   
 };
+
+var saveTasks = function(){
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+var loadTasks = function() {
+  var savedTasks = localStorage.getItem("tasks");
+
+  if (!savedTasks) {
+    return false;
+  }
+
+  savedTasks = JSON.parse(savedTasks);
+  
+  // loop through savedTasks array
+for (var i = 0; i < savedTasks.length; i++) {
+  // pass each task object into the `createTaskEl()` function
+  createTaskEl(savedTasks[i]);
+}
+
+}
+
+loadTasks();
 
 // Create a new task
 formEl.addEventListener("submit", taskFormHandler);
